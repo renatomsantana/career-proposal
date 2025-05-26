@@ -1,0 +1,773 @@
+function version01() {
+  var ss = SpreadsheetApp.openById('1RtXwQ0CIdpWa6sy5WB3pBLRKNdN9RiUYNvUytAmsMSw'); //spreadsheet form "Form Careers Proposal"
+  var sRespostas = ss.getSheets()[0];
+  var ultFila = sRespostas.getLastRow();
+
+  var ssBDtxt = SpreadsheetApp.openById('1jfvxI3_IL-AgylBtn7Erzts6mOJyyE0FkR1glODas5k'); // spreadsheet textos base propuestas
+  var bdTxt = ssBDtxt.getSheetByName('Career'); //
+
+  //spreadsheet Planilha de Controle Comercial
+  var pCC = SpreadsheetApp.openById('13TmYShTDWlY5yQyPfge9GkqBqTYjIjlJYeNmGafOJwk').getSheets()[1];
+  var ufPcc = pCC.getLastRow();
+  Logger.log(ufPcc);  
+
+  var modelo, buFolder, buEmail;
+  var colLang;
+
+  //valores por default
+  var proposalTitle = "";
+  var proposalSubtitle = "";
+  var flatFeeMonth = 0;
+  var flatFeePosition = 0;
+  var flatFeeMonthText;
+  var flatFeePositionText;
+  var covered = 0;
+  var fee = 7.5; //porcentaje
+  var retainerFee = 0;
+  var intermediateFee = 0;
+  var intermediateMeeting = 0;
+  var intermediateMonth = 0;
+  var completionFee = 40; //porcentaje
+  var cancellationFeePrev = 50; //porcentaje
+  var cancellationFeeAfter = 100; //porcentaje
+  var scalability1 = 7;
+  var scalabilityDiscount1 = 10; // resta un % de descuento
+  var scalability2 = 15;
+  var scalabilityDiscount2 = 15; // resta un % de descuento
+  var dueDays = 15;
+  var exclusivityDays = 21;
+  var meetCoaching = meetPsycho = meetCareers = meetNegotiation = meetCV = meetNetworking = meetHeadhunter = meetHR = meetLine = meetClevel = meetGTM = meetSoft = meetBusiness = meetInstit = meetTools = meetValue = 0;
+  var dbFolder = "19JlJBfL7A1BeiVXk-Xbb2hfU_HJ1CGJ-"; // en esta carpeta se almacenan las propuestas generadas
+
+
+  Logger.log(ultFila);
+  var fila = ultFila;
+
+  var ssDb = SpreadsheetApp.openById('1Zuyth2djZC2WcDljaZBL_Rms0k2GpAc9wGzgUHsV0so'); // spreadsheet BD propuestas generadas
+  var rowBd = ssDb.getSheetByName('validation').getRange("O2").getValue();
+
+  //copio los datos cargados desde el form
+
+  /* 1. Basis Data */
+  var time = sRespostas.getRange(fila,1,1,1).getValue();
+  var buEmail = sRespostas.getRange(fila,2,1,1).getValue();
+  var bu = sRespostas.getRange(fila,3,1,1).getValue();
+  var lenguage = sRespostas.getRange(fila,4,1,1).getValue();
+  var country = sRespostas.getRange(fila,5,1,1).getValue();
+  var clientType = sRespostas.getRange(fila,6,1,1).getValue();
+
+  /* 2. Company Data */
+  var compFantasyName = sRespostas.getRange(fila,7,1,1).getValue();
+  var compWeb = sRespostas.getRange(fila,8,1,1).getValue();
+  var compBusinessName = sRespostas.getRange(fila,9,1,1).getValue();
+  var compId = sRespostas.getRange(fila,10,1,1).getValue();
+  var compAddress = sRespostas.getRange(fila,11,1,1).getValue();
+  var contactPerson = sRespostas.getRange(fila,12,1,1).getValue();
+  var contactRole = sRespostas.getRange(fila,13,1,1).getValue();
+  var contactEmail = sRespostas.getRange(fila,14,1,1).getValue();
+  var contactPhone = sRespostas.getRange(fila,15,1,1).getValue();
+
+  /* 2. Natural Person Data */
+  var personName = sRespostas.getRange(fila,16,1,1).getValue();
+  var personLinkedin = sRespostas.getRange(fila,17,1,1).getValue();
+  var personId = sRespostas.getRange(fila,18,1,1).getValue();
+  var personLocation = sRespostas.getRange(fila,19,1,1).getValue();
+  var personEmail = sRespostas.getRange(fila,20,1,1).getValue();
+  var personPhone = sRespostas.getRange(fila,21,1,1).getValue();
+  var personCompany = sRespostas.getRange(fila,22,1,1).getValue();
+  var personRole = sRespostas.getRange(fila,23,1,1).getValue();
+
+  /* 3.a. Fee Data */
+  var proposalTitleShow = sRespostas.getRange(fila,24,1,1).getValue();
+  proposalSubtitle = sRespostas.getRange(fila,25,1,1).getValue();
+  var coin = sRespostas.getRange(fila,26,1,1).getValue();
+
+  if(sRespostas.getRange(fila,27,1,1).getValue().toString() != "" ){
+    var flatFeeMonth = sRespostas.getRange(fila,27,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,28,1,1).getValue().toString() != ""){
+    var flatFeePosition = sRespostas.getRange(fila,28,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,29,1,1).getValue().toString() != ""){
+    var covered = sRespostas.getRange(fila,29,1,1).getValue();
+  }
+
+  if(sRespostas.getRange(fila,30,1,1).getValue().toString() != ""){
+    fee = sRespostas.getRange(fila,30,1,1).getValue();
+  }
+
+  if(sRespostas.getRange(fila,31,1,1).getValue().toString() != ""){
+    retainerFee = sRespostas.getRange(fila,31,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,32,1,1).getValue().toString() != ""){
+    intermediateFee = sRespostas.getRange(fila,32,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,33,1,1).getValue().toString() != ""){
+    intermediateMeeting = sRespostas.getRange(fila,33,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,34,1,1).getValue().toString() != ""){
+    intermediateMonth = sRespostas.getRange(fila,34,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,35,1,1).getValue().toString() != ""){
+    completionFee = sRespostas.getRange(fila,35,1,1).getValue();
+  }
+  
+  /* 4. Disclaimer Data */
+  if(sRespostas.getRange(fila,36,1,1).getValue().toString() != ""){
+    cancellationFeePrev = sRespostas.getRange(fila,36,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,37,1,1).getValue().toString() != ""){
+    cancellationFeeAfter = sRespostas.getRange(fila,37,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,38,1,1).getValue().toString() != ""){
+    scalability1 = sRespostas.getRange(fila,38,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,39,1,1).getValue().toString() != ""){
+    scalabilityDiscount1 = sRespostas.getRange(fila,39,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,40,1,1).getValue().toString() != ""){
+    scalability2 = sRespostas.getRange(fila,40,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,41,1,1).getValue().toString() != ""){
+    scalabilityDiscount2 = sRespostas.getRange(fila,41,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,42,1,1).getValue().toString() != ""){
+    dueDays = sRespostas.getRange(fila,42,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,43,1,1).getValue().toString() != ""){
+    exclusivityDays = sRespostas.getRange(fila,43,1,1).getValue();
+  }
+  
+  //aca los datos de los meeting
+  if(sRespostas.getRange(fila,44,1,1).getValue() != 0){
+    meetCoaching = sRespostas.getRange(fila,44,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,45,1,1).getValue() != 0){
+    meetPsycho = sRespostas.getRange(fila,45,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,46,1,1).getValue() != 0){
+    meetCareers = sRespostas.getRange(fila,46,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,47,1,1).getValue() != 0){
+    meetNegotiation = sRespostas.getRange(fila,47,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,48,1,1).getValue() != 0){
+    meetCV = sRespostas.getRange(fila,48,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,49,1,1).getValue() != 0){
+    meetNetworking = sRespostas.getRange(fila,49,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,50,1,1).getValue() != 0){
+    meetHeadhunter = sRespostas.getRange(fila,50,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,51,1,1).getValue() != 0){
+    meetHR = sRespostas.getRange(fila,51,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,52,1,1).getValue() != 0){
+    meetLine = sRespostas.getRange(fila,52,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,53,1,1).getValue() != 0){
+    meetClevel = sRespostas.getRange(fila,53,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,54,1,1).getValue() !=0){
+    meetGTM = sRespostas.getRange(fila,54,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,55,1,1).getValue() != 0){
+    meetSoft = sRespostas.getRange(fila,55,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,56,1,1).getValue() != 0){
+    meetBusiness = sRespostas.getRange(fila,56,1,1).getValue();
+  }
+  if(meetInstit = sRespostas.getRange(fila,57,1,1).getValue() != 0){
+    meetInstit = sRespostas.getRange(fila,57,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,58,1,1).getValue() != 0){
+    meetTools = sRespostas.getRange(fila,58,1,1).getValue();
+  }
+  if(sRespostas.getRange(fila,59,1,1).getValue() != 0){
+    meetValue = sRespostas.getRange(fila,59,1,1).getValue();
+  }
+
+  //paso los datos a la hoja DB
+  //abro spreadsheet DB
+
+  var sBd = ssDb.getSheetByName('Career');
+
+  sBd.getRange(rowBd,2,1,1).setValue(bu);
+  sBd.getRange(rowBd,3,1,1).setValue(clientType);
+  //Company Data
+  sBd.getRange(rowBd,4,1,1).setValue(compFantasyName);
+  sBd.getRange(rowBd,5,1,1).setValue(compWeb);
+  sBd.getRange(rowBd,6,1,1).setValue(compBusinessName);
+  sBd.getRange(rowBd,7,1,1).setValue(compId);
+  sBd.getRange(rowBd,8,1,1).setValue(compAddress);
+  sBd.getRange(rowBd,9,1,1).setValue(contactPerson);
+  sBd.getRange(rowBd,10,1,1).setValue(contactRole);
+  sBd.getRange(rowBd,11,1,1).setValue(contactEmail);
+  sBd.getRange(rowBd,12,1,1).setValue(contactPhone);
+  
+  //Person Data
+  sBd.getRange(rowBd,13,1,1).setValue(personName);
+  sBd.getRange(rowBd,14,1,1).setValue(personLinkedin);
+  sBd.getRange(rowBd,15,1,1).setValue(personId);
+  sBd.getRange(rowBd,16,1,1).setValue(personLocation);
+  sBd.getRange(rowBd,17,1,1).setValue(personEmail);
+  sBd.getRange(rowBd,18,1,1).setValue(personPhone);
+  sBd.getRange(rowBd,19,1,1).setValue(personCompany);
+  sBd.getRange(rowBd,20,1,1).setValue(personRole);
+  //Basis Data
+  sBd.getRange(rowBd,21,1,1).setValue(country);
+
+  //Fee Data
+  if(proposalTitleShow == 'Yes'){
+    if(flatFeeMonth > 0)  {
+      if(retainerFee > 0) {proposalTitle = "Flat Retainer";}
+      else if(retainerFee == 0 && intermediateFee > 0) {proposalTitle = "Flat Intermediate";}
+      else if(retainerFee == 0 && intermediateFee == 0) {proposalTitle = "Flat";}
+    }
+    else if(flatFeeMonth == 0) {
+      if(retainerFee > 0) {proposalTitle = "Retainer";}
+      else if(retainerFee == 0 && intermediateFee > 0) {proposalTitle = "Intermediate";}
+      else if(retainerFee == 0 && intermediateFee == 0) {proposalTitle = "Success";}
+    }
+  }
+  sBd.getRange(rowBd,22,1,1).setValue(proposalTitle);
+  sBd.getRange(rowBd,23,1,1).setValue(proposalSubtitle);
+  sBd.getRange(rowBd,24,1,1).setValue(coin);
+  sBd.getRange(rowBd,25,1,1).setValue(flatFeeMonth);
+  sBd.getRange(rowBd,26,1,1).setValue(flatFeePosition);
+  sBd.getRange(rowBd,27,1,1).setValue(covered);
+  sBd.getRange(rowBd,28,1,1).setValue(fee);
+  sBd.getRange(rowBd,29,1,1).setValue(retainerFee);
+  sBd.getRange(rowBd,30,1,1).setValue(intermediateFee);
+  sBd.getRange(rowBd,31,1,1).setValue(intermediateMeeting);
+  sBd.getRange(rowBd,32,1,1).setValue(intermediateMonth);
+  sBd.getRange(rowBd,33,1,1).setValue(completionFee);
+  sBd.getRange(rowBd,34,1,1).setValue(cancellationFeePrev);
+  sBd.getRange(rowBd,35,1,1).setValue(cancellationFeeAfter);
+  sBd.getRange(rowBd,36,1,1).setValue(scalability1);
+  sBd.getRange(rowBd,37,1,1).setValue(scalabilityDiscount1);
+  sBd.getRange(rowBd,38,1,1).setValue(scalability2);
+  sBd.getRange(rowBd,39,1,1).setValue(scalabilityDiscount2);
+  sBd.getRange(rowBd,40,1,1).setValue(dueDays);
+  sBd.getRange(rowBd,41,1,1).setValue(exclusivityDays);
+  sBd.getRange(rowBd,42,1,1).setValue(meetCoaching);
+  sBd.getRange(rowBd,43 ,1,1).setValue(meetPsycho);
+  sBd.getRange(rowBd,44 ,1,1).setValue(meetCareers);
+  sBd.getRange(rowBd,45 ,1,1).setValue(meetNegotiation);
+  sBd.getRange(rowBd,46 ,1,1).setValue(meetCV);
+  sBd.getRange(rowBd,47 ,1,1).setValue(meetNetworking);
+  sBd.getRange(rowBd,48 ,1,1).setValue(meetHeadhunter);
+  sBd.getRange(rowBd,49 ,1,1).setValue(meetHR);
+  sBd.getRange(rowBd,50 ,1,1).setValue(meetLine);
+  sBd.getRange(rowBd,51 ,1,1).setValue(meetClevel);
+  sBd.getRange(rowBd,52 ,1,1).setValue(meetGTM);
+  sBd.getRange(rowBd,53 ,1,1).setValue(meetSoft);
+  sBd.getRange(rowBd,54 ,1,1).setValue(meetBusiness);
+  sBd.getRange(rowBd,55 ,1,1).setValue(meetInstit);
+  sBd.getRange(rowBd,56 ,1,1).setValue(meetTools);
+  sBd.getRange(rowBd,57 ,1,1).setValue(meetValue);
+  sBd.getRange(rowBd,67,1,1).setValue(time);
+
+  //convierto a texto los flatFee para formatearlos segun idioma
+  if(lenguage == 'English') {
+    flatFeeMonthText = convertUsd(flatFeeMonth);
+    flatFeePositionText = convertUsd(flatFeePosition);
+  }
+  else {
+    flatFeeMonthText = convertPeso(flatFeeMonth);
+    flatFeePositionText = convertPeso(flatFeePosition);
+  }
+
+  //seteo columna para tomar texto segun lenguaje
+  switch(lenguage){
+    
+    case "Português":
+    colLang = 3;
+    break;
+    
+    case "English":
+    colLang = 4;
+    break;
+
+    case "Español":
+    colLang = 5;
+    break;
+  }
+
+  //seteo variables segun B.O.
+  switch(bu){
+    case "Mendoza - AR":
+    buEmail = "alankarzovnik@growgroup.us";
+    buFolder = "1iOC1sqFVmbwr4yajtb66NtT7F8Pm10Ln";
+    buCode = "MDZ1AR";
+    break;
+
+    case "Lima - PR":
+    buEmail = "eduardo.cuadra@growgroup.us";
+    buFolder = "1PuWhwgveTJQ3LXlP70ibKTxnX-KMKGsD";
+    buCode = "LIM1PE";
+    break;
+
+    case "Recife - BR":
+    buEmail = "felipemancano@growgroup.us";
+    buFolder = "1-sYsmQjj4AsA4b1wnwR--8f87eBpjCuE";
+    buCode = "REC1BR";
+    break;
+
+    case "Ribeirão Preto - BR":
+    buEmail = "fernanda.minniti@growgroup.us";
+    buFolder = "1FLnNE2sN1iLrDYYeg_lFxGv-VXJMw9Qk";
+    buCode = "RAO1BR";
+    break;
+
+    case "USA":
+    buEmail = "daniel.pizarro@growgroup.us";
+    buFolder = "1dETTbZ0BEzjqij_u5kzw6DCp0QeBgZyC";
+    buCode = "ATL1US";
+    break;
+
+    case "Santiago - CL (Ramiro Parra)":
+    buEmail = "cesarantunes@growgroup.us";
+    buFolder = "1GZ3d08Js5vFmBSK775YnSw9nWUVOBFe-";
+    buCode = "SCL1CL";
+    break;
+
+    case "Santiago - CL (Sebastián Selle)":
+    buEmail = "sebastian.selle@growgroup.us";
+    buFolder = "1qRWJohDyj5DSmYM3jFNazAqDoC8ysjgL";
+    buCode = "SCL2CL";
+    break;
+  }
+
+  proposalCode = sBd.getRange(rowBd,70,1,1).getValue();
+  proposalCode = proposalCode;
+
+  sBd.getRange(rowBd,1,1,1).setValue(proposalCode);
+
+  //Abro archivo modelo
+  modelo = DriveApp.getFileById('1jFpD6F8lIpX7Ua_az4kDoolDy_FUlRRFR8qy3UstEFo');
+
+  //Duplico slide y lo nombre
+  var proposalCodeName = 'Proposal - ' + proposalCode
+  modelo.makeCopy(proposalCodeName,DriveApp.getFolderById(dbFolder));
+
+  //busco archivo creado
+  var files = DriveApp.getFilesByName(proposalCodeName);
+  
+  while (files.hasNext()) {
+    var file = files.next();
+  }
+
+  //obtengo la url del archivo creado
+    var urlSlide = file.getUrl();
+    //abro el archivo
+    var slides = SlidesApp.openByUrl(urlSlide);
+  
+    //bucle para buscar y reemplazar los textos en la propuesta
+    var slidesss = slides.getSlides();
+    slidesss.forEach(function(slide){ 
+       var shapes = (slide.getShapes());
+       shapes.forEach(function(shape){
+         if(shape.getShapeType() == 'TEXT_BOX'){
+           //completo el texto de la propuesta segun idioma
+           //page1
+           shape.getText().replaceAllText('{{proposal}}',bdTxt.getRange(3,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{proposalCode}}',bdTxt.getRange(4,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{comFantasyName}}',bdTxt.getRange(5,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{contactPerson}}',bdTxt.getRange(6,colLang,1,1).getValue());
+           //page2
+           shape.getText().replaceAllText('{{aboutTitle}}',bdTxt.getRange(8,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{about}}',bdTxt.getRange(9,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{servicesTitle}}',bdTxt.getRange(10,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{services}}',bdTxt.getRange(11,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx9}}',bdTxt.getRange(12,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx10}}',bdTxt.getRange(13,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx11}}',bdTxt.getRange(14,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx12}}',bdTxt.getRange(15,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx13}}',bdTxt.getRange(16,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx14}}',bdTxt.getRange(17,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx15}}',bdTxt.getRange(18,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx16}}',bdTxt.getRange(19,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{growWayTitle}}',bdTxt.getRange(20,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx18}}',bdTxt.getRange(21,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx19}}',bdTxt.getRange(22,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx20}}',bdTxt.getRange(23,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx21}}',bdTxt.getRange(24,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx22}}',bdTxt.getRange(25,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx23}}',bdTxt.getRange(26,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{tx24}}',bdTxt.getRange(27,colLang,1,1).getValue());
+           //page3
+           shape.getText().replaceAllText('{{OurTeamTitle}}',bdTxt.getRange(29,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{alanName}}',bdTxt.getRange(30,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{alanDescription}}',bdTxt.getRange(31,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{felipeName}}',bdTxt.getRange(32,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{felipeDescription}}',bdTxt.getRange(33,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{fernandaName}}',bdTxt.getRange(34,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{fernandaDescription}}',bdTxt.getRange(35,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{eduardoName}}',bdTxt.getRange(36,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{eduardoDescription}}',bdTxt.getRange(37,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{danielName}}',bdTxt.getRange(38,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{danielDescription}}',bdTxt.getRange(39,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{whereTitle}}',bdTxt.getRange(42,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{recognitionTitle}}',bdTxt.getRange(43,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{onuText}}',bdTxt.getRange(44,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{gptwText}}',bdTxt.getRange(45,colLang,1,1).getValue());
+           //page 4, 5 y 6
+           shape.getText().replaceAllText('{{proposal}}',bdTxt.getRange(47,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{proposalTitle}}',bdTxt.getRange(48,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{proposalSubtitle}}',bdTxt.getRange(49,colLang,1,1).getValue());
+
+           //sesiones
+           //aqui
+           shape.getText().replaceAllText('{{sessions}}',bdTxt.getRange(50,colLang,1,1).getValue());
+           var aux = 0;
+           for(i=44; i<=55; i++){
+             var j = i+7;
+             var k = i + 88;
+             if(sRespostas.getRange(fila,i,1,1).getValue() != 0){
+               aux++;
+               var qtySession = '{{quantitySession'+ aux + '}}';
+               var nameSession = '{{nameSession'+ aux + '}}';
+               var descriptionSession = '{{descriptionSession'+ aux + '}}';
+               shape.getText().replaceAllText(qtySession, sRespostas.getRange(fila,i,1,1).getValue());
+               shape.getText().replaceAllText(nameSession, bdTxt.getRange(j,colLang,1,1).getValue());
+               shape.getText().replaceAllText(descriptionSession, bdTxt.getRange(k,colLang,1,1).getValue());
+             }           
+           }
+           //tengo q ver cuantas lineas se ocuparon y borrar las demás
+           aux++;
+           for(i=aux; i<13; i++){
+             var qtySession = '{{quantitySession'+ i + '}}';
+             var nameSession = '{{nameSession'+ i + '}}';
+             var descriptionSession = '{{descriptionSession'+ i + '}}';
+             shape.getText().replaceAllText(qtySession, '');
+             shape.getText().replaceAllText(nameSession, '');
+             shape.getText().replaceAllText(descriptionSession, '');
+           }
+
+           if(meetBusiness != 0 || meetInstit != 0 || meetTools != 0 || meetValue != 0){
+             shape.getText().replaceAllText('{{startupSessions}}',bdTxt.getRange(67,colLang,1,1).getValue());
+             var aux = 12;
+             for(i=56; i<=59; i++){
+               var j = i + 7;
+               var k = i + 88;
+               if(sRespostas.getRange(fila,i,1,1).getValue() != 0){
+                 aux++;
+                 var qtySession = '{{quantitySession'+ aux + '}}';
+                 var nameSession = '{{nameSession'+ aux + '}}';
+                 var descriptionSession = '{{descriptionSession'+ aux + '}}';
+                 shape.getText().replaceAllText(qtySession, sRespostas.getRange(fila,i,1,1).getValue());
+                 shape.getText().replaceAllText(nameSession, bdTxt.getRange(j,colLang,1,1).getValue());  
+                 shape.getText().replaceAllText(descriptionSession, bdTxt.getRange(k,colLang,1,1).getValue());  
+                }
+             }
+             //tengo q ver cuantas lineas se ocuparon y borrar las demás
+             aux++;
+             for(i=aux; i<17; i++){
+               var qtySession = '{{quantitySession'+ i + '}}';
+               var nameSession = '{{nameSession'+ i + '}}';
+               var descriptionSession = '{{descriptionSession'+ i + '}}';
+               shape.getText().replaceAllText(qtySession, '');
+               shape.getText().replaceAllText(nameSession, '');
+               shape.getText().replaceAllText(descriptionSession, '');
+             }
+           }
+           else{
+             shape.getText().replaceAllText('{{startupSessions}}', '');
+             shape.getText().replaceAllText('{{quantitySession13}}', '');
+             shape.getText().replaceAllText('{{nameSession13}}', '');
+             shape.getText().replaceAllText('{{descriptionSession13}}', '');
+             shape.getText().replaceAllText('{{quantitySession14}}', '');
+             shape.getText().replaceAllText('{{nameSession14}}', '');
+             shape.getText().replaceAllText('{{descriptionSession14}}', '');
+             shape.getText().replaceAllText('{{quantitySession15}}', '');
+             shape.getText().replaceAllText('{{nameSession15}}', '');
+             shape.getText().replaceAllText('{{descriptionSession15}}', '');
+             shape.getText().replaceAllText('{{quantitySession16}}', '');
+             shape.getText().replaceAllText('{{nameSession16}}', '');
+             shape.getText().replaceAllText('{{descriptionSession16}}', '');
+           }
+
+           shape.getText().replaceAllText('{{paymentMethodsFees}}',bdTxt.getRange(68,colLang,1,1).getValue());
+           
+           if(flatFeeMonth==0){
+             shape.getText().replaceAllText('{{flatFeePerMonth}}','');  
+             shape.getText().replaceAllText('{{flatFeeMonth}}','');
+             shape.getText().replaceAllText('{{coin1}}','');
+           }
+           else{
+             shape.getText().replaceAllText('{{flatFeePerMonth}}',bdTxt.getRange(69,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{coin1}}',coin);
+             shape.getText().replaceAllText('{{flatFeeMonth}}',flatFeeMonthText);
+           }
+
+           if(flatFeePosition==0){
+             shape.getText().replaceAllText('{{flatFeePerPosition}}','');
+             shape.getText().replaceAllText('{{coin2}}','');
+             shape.getText().replaceAllText('{{flatFeePosition}}','');
+           }
+           else{
+             shape.getText().replaceAllText('{{flatFeePerPosition}}',bdTxt.getRange(70,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{coin2}}',coin);
+             shape.getText().replaceAllText('{{flatFeePosition}}',flatFeePositionText);
+           }
+           
+           shape.getText().replaceAllText('{{coveredPositions}}',bdTxt.getRange(71,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{covered}}',covered);
+
+           if(fee == 0 || fee == ''){
+             shape.getText().replaceAllText('{{feeText}}','');  
+           }
+           else{
+             shape.getText().replaceAllText('{{feeText}}',bdTxt.getRange(72,colLang,1,1).getValue());
+           }
+
+           shape.getText().replaceAllText('{{conditions}}',bdTxt.getRange(73,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{paymentFlow}}',bdTxt.getRange(74,colLang,1,1).getValue());
+
+           if(retainerFee == 0 && intermediateFee == 0 && completionFee == 0) {
+             shape.getText().replaceAllText('{{paymentFlowDescription}}','');
+           }
+           else {
+             shape.getText().replaceAllText('{{paymentFlowDescription}}',bdTxt.getRange(75,colLang,1,1).getValue());
+           }
+
+           shape.getText().replaceAllText('{{dueDaysText}}',bdTxt.getRange(76,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{cancellation}}',bdTxt.getRange(77,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{cancellationDescription}}',bdTxt.getRange(78,colLang,1,1).getValue());
+
+           shape.getText().replaceAllText('{{exclusivityTitle}}',bdTxt.getRange(86,colLang,1,1).getValue());
+           //if segun exclusivityDays
+           if(exclusivityDays == 0){
+             shape.getText().replaceAllText('{{exclusivityDescription}}',bdTxt.getRange(87,colLang,1,1).getValue());
+           }
+           else if(exclusivityDays > 0){
+             shape.getText().replaceAllText('{{exclusivityDescription}}',bdTxt.getRange(88,colLang,1,1).getValue());
+           }
+           else{
+             shape.getText().replaceAllText('{{exclusivityDescription}}',bdTxt.getRange(89,colLang,1,1).getValue());
+           }
+           
+           shape.getText().replaceAllText('{{scalability}}',bdTxt.getRange(82,colLang,1,1).getValue());
+
+           if(scalability1 == 0){
+             shape.getText().replaceAllText('{{scalabilityText1}}',bdTxt.getRange(84,colLang,1,1).getValue());  
+             shape.getText().replaceAllText('{{scalabilityText2}}','');
+           }
+           else{
+             shape.getText().replaceAllText('{{scalabilityText1}}',bdTxt.getRange(83,colLang,1,1).getValue());
+             if(scalability2 == 0){
+               shape.getText().replaceAllText('{{scalabilityText2}}','');
+             }
+             else{
+               shape.getText().replaceAllText('{{scalabilityText2}}',bdTxt.getRange(85,colLang,1,1).getValue());
+             }
+           }
+           
+           shape.getText().replaceAllText('{{entityParts}}',bdTxt.getRange(90,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{entityPartsText}}',bdTxt.getRange(91,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{scope}}',bdTxt.getRange(92,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{scopeDescription}}',bdTxt.getRange(93,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{teamConcept}}',bdTxt.getRange(94,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{teamConceptDescription}}',bdTxt.getRange(95,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{followUp}}',bdTxt.getRange(96,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{followUpDescription}}',bdTxt.getRange(97,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{format}}',bdTxt.getRange(98,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{formatDescription}}',bdTxt.getRange(99,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{employmentStatus}}',bdTxt.getRange(100,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{employmentStatusDescription}}',bdTxt.getRange(101,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{serviceContinuity}}',bdTxt.getRange(102,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{serviceContinuityDescription}}',bdTxt.getRange(103,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{confidentiality}}',bdTxt.getRange(104,colLang,1,1).getValue()); 
+           shape.getText().replaceAllText('{{confidentialityDescription}}',bdTxt.getRange(105,colLang,1,1).getValue()); 
+           
+           //proposal validation
+           shape.getText().replaceAllText('{{proposalValidation}}',bdTxt.getRange(106,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{compFantasyName}}',compFantasyName);           
+           shape.getText().replaceAllText('{{contractorsData}}',bdTxt.getRange(107,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{name}}',bdTxt.getRange(108,colLang,1,1).getValue());
+
+           //if segun pais
+           if(country == "Argentina"){
+             shape.getText().replaceAllText('{{disclaimerText}}',bdTxt.getRange(79,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growName}}',bdTxt.getRange(118,colLang,1,1).getValue());  
+             shape.getText().replaceAllText('{{growId}}',bdTxt.getRange(119,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growAddress}}',bdTxt.getRange(120,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growSignature}}',bdTxt.getRange(124,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growSignaturePosition}}',bdTxt.getRange(125,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growPhone}}',bdTxt.getRange(127,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growEmail}}',bdTxt.getRange(129,colLang,1,1).getValue());
+           }
+
+           else if(country == "Chile"){
+             shape.getText().replaceAllText('{{disclaimerText}}',bdTxt.getRange(80,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growName}}',bdTxt.getRange(121,colLang,1,1).getValue());  
+             shape.getText().replaceAllText('{{growId}}',bdTxt.getRange(122,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growAddress}}',bdTxt.getRange(123,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growSignature}}',bdTxt.getRange(124,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growSignaturePosition}}',bdTxt.getRange(125,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growPhone}}',bdTxt.getRange(128,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growEmail}}',bdTxt.getRange(129,colLang,1,1).getValue());
+           }
+
+           else {
+             shape.getText().replaceAllText('{{disclaimerText}}',bdTxt.getRange(81,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growName}}',bdTxt.getRange(109,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growId}}',bdTxt.getRange(111,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growAddress}}',bdTxt.getRange(113,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growSignature}}',bdTxt.getRange(116,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growSignaturePosition}}',bdTxt.getRange(117,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growPhone}}',bdTxt.getRange(126,colLang,1,1).getValue());
+             shape.getText().replaceAllText('{{growEmail}}',bdTxt.getRange(130,colLang,1,1).getValue());
+           }
+           
+           shape.getText().replaceAllText('{{id}}',bdTxt.getRange(110,colLang,1,1).getValue());          
+           shape.getText().replaceAllText('{{address}}',bdTxt.getRange(112,colLang,1,1).getValue());
+           shape.getText().replaceAllText('{{contractorData}}',bdTxt.getRange(114,colLang,1,1).getValue());        
+           shape.getText().replaceAllText('{{compBusinessName}}',compBusinessName);
+           shape.getText().replaceAllText('{{compId}}',compId);
+           shape.getText().replaceAllText('{{compAddress}}',compAddress);
+           shape.getText().replaceAllText('{{contactPerson}}',contactPerson);
+           shape.getText().replaceAllText('{{contactRole}}',contactRole);
+         }
+        });
+      })
+
+      //elimino hoja que no corresponda firma Grow
+      if(country == 'Argentina' || country == 'Chile') {
+        slidesss[7].remove();   
+      }  
+  slides.saveAndClose();
+      slides = SlidesApp.openByUrl(urlSlide);
+      //vuelvo a abrir slide
+      slidesss = slides.getSlides();
+  
+      /* +++ forEach para el reemplazar datos segun proyectos +++ */
+      slidesss.forEach(function(slide,index){
+      var shapes = (slide.getShapes());
+      shapes.forEach(function(shape){
+            if(shape.getShapeType() == 'TEXT_BOX'){
+              shape.getText().replaceAllText('{{proposalTitle}}',proposalTitle);
+              shape.getText().replaceAllText('{{proposalSubtitle}}',proposalSubtitle);
+              shape.getText().replaceAllText('{{proposalCode}}',proposalCode);
+              shape.getText().replaceAllText('{{fee}}',fee);
+              shape.getText().replaceAllText('{{retainerFee}}',retainerFee);
+              shape.getText().replaceAllText('{{intermediateFee}}',intermediateFee);
+              shape.getText().replaceAllText('{{completionFee}}',completionFee);
+              shape.getText().replaceAllText('{{intermediateMeeting}}',intermediateMeeting);
+              shape.getText().replaceAllText('{{intermediateMonth}}',intermediateMonth);
+              shape.getText().replaceAllText('{{dueDays}}',dueDays);
+              shape.getText().replaceAllText('{{cancellationFeePrev}}',cancellationFeePrev);
+              shape.getText().replaceAllText('{{cancellationFeeAfter}}',cancellationFeeAfter);
+              shape.getText().replaceAllText('{{scalability1}}',scalability1);
+              shape.getText().replaceAllText('{{scalabilityDiscount1}}',scalabilityDiscount1);
+              shape.getText().replaceAllText('{{scalability2}}',scalability2);
+              shape.getText().replaceAllText('{{scalabilityDiscount2}}',scalabilityDiscount2);
+              shape.getText().replaceAllText('{{exclusivityDays}}',exclusivityDays);
+            }
+          }) 
+        
+      })
+
+  slides.saveAndClose();
+  slides = SlidesApp.openByUrl(urlSlide);
+  
+  Logger.log("var slidesss:"+slidesss);
+  Logger.log("url del slide: "+urlSlide);  
+  Logger.log("var slides:"+slides);
+
+  var slideId = slides.getId(); 
+  Logger.log("var slideId:"+slideId);
+
+  
+  var fileAtach = DriveApp.getFileById(slideId);
+  Logger.log("var fileAtach:"+fileAtach);
+  
+  /* +++ conversion a PDF +++ */
+  var blob = fileAtach.getBlob();
+  var saveFolder = DriveApp.getFolderById(dbFolder);
+  var pdfFile = saveFolder.createFile(blob);
+  pdfFile.setName(proposalCodeName+".pdf");
+  var urlPdf = pdfFile.getUrl();
+  /* +++ fin conversion a PDF +++ */
+
+    
+  /* acceso directo al archivo */  
+  var targetId = pdfFile.getId(); // Please set the ID of target file or folder.
+  var shortcutName = proposalCodeName; // Please set the shortcut name.
+  var folderId = DriveApp.getFolderById(buFolder);
+  DriveApp.createShortcut(targetId).moveTo(folderId);
+
+
+
+    //pego la url de los archivos en la DB
+  sBd.getRange(rowBd,68,1,1).setValue(urlSlide);  
+  sBd.getRange(rowBd,69,1,1).setValue(urlPdf);
+
+
+  //envio mail con el archivo creado
+  var emailTest = "cesarigantunes@gmail.com";
+  var alertEmail = "felipemancano@growgroup.us, alankarzovnik@growgroup.us";
+  //var alertEmail = "cesarantunes@growgroup.us, cesarigantunes@gmail.com";
+
+  GmailApp.sendEmail(buEmail,"New proposal generated", "Hello!\n\nEverything went excellent, attached you have your proposal generated in PDF format ready to send.\nYou can also see in this link, the editable document: " + urlSlide,{bcc: "cesarantunes@growgroup.us", attachments: [pdfFile.getAs(MimeType.PDF)], name: "Grow Group Automation"});
+
+
+  //alert var not default
+  if(fee != 7.5 || cancellationFeePrev != 50 || cancellationFeeAfter != 100 || scalability1 != 7 || scalabilityDiscount1 != 10 || scalability2 != 15 || scalabilityDiscount2 != 15 || dueDays != 15 || exclusivityDays!=21){
+    GmailApp.sendEmail(alertEmail, "Proposal alert, values out of default", "Hello\n\nBU: " + bu + " generated a proposal with some values different from the default ones, you can review the document in the following link " + urlSlide + "\n\n"+
+    "Fee: "+fee+"\n"+
+    "cancellationFeePrev: "+cancellationFeePrev+"\n"+
+    "cancellationFeeAfter: "+cancellationFeeAfter+"\n"+
+    "scalability1: "+scalability1+"\n"+
+    "scalabilityDiscount1: "+scalabilityDiscount1+"\n"+
+    "scalability2: "+scalability2+"\n\n"+
+    "scalabilityDiscount2: "+scalabilityDiscount2+"\n"+
+    "dueDays: "+dueDays+"\n"+
+    "exclusivityDays: "+exclusivityDays+"\n",
+    {bcc: "cesarantunes@growgroup.us", attachments: [pdfFile.getAs(MimeType.PDF)], name: "Grow Group Automation"});
+  }
+
+  
+
+   var nextRowBD = rowBd + 1;
+   ssDb.getSheetByName('validation').getRange("O2").setValue(nextRowBD);
+
+   Logger.log("NextRowBD:"+nextRowBD);
+  
+  
+}
+
+/* +++ funciones para convertir la forma de mostrar el importe segun dolares o pesos */
+function convertUsd(monto) {
+  var long = monto.toString().length;
+  monto.toString();
+
+  if(long == 4){
+    var dd = monto.toString().substring(0,1) + "," + monto.toString().substring(1) + ".00";
+  }
+
+  else if(long == 5){
+    var dd = monto.toString().substring(0,2) + "," + monto.toString().substring(1) + ".00";
+  }
+
+  return dd;
+
+}
+
+function convertPeso(monto) {
+  var long = monto.toString().length;
+  monto.toString();
+
+  if(long == 4){
+    var dd = monto.toString().substring(0,1) + "." + monto.toString().substring(1) + ",00";
+  }
+
+  else if(long == 5){
+    var dd = monto.toString().substring(0,2) + "." + monto.toString().substring(1) + ",00";
+  }
+
+  return dd;
+
+}
