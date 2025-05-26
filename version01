@@ -3,8 +3,8 @@ function version01() {
   var sRespostas = ss.getSheets()[0];
   var ultFila = sRespostas.getLastRow();
 
-  var ssBDtxt = SpreadsheetApp.openById('1jfvxI3_IL-AgylBtn7Erzts6mOJyyE0FkR1glODas5k'); // spreadsheet textos base propuestas
-  var bdTxt = ssBDtxt.getSheetByName('Career'); //
+  var ssBDtxt = SpreadsheetApp.openById('1jfvxI3_IL-AgylBtn7Erzts6mOJyyE0FkR1glODas5k'); // spreadsheet textos base propostas
+var bdTxt = ssBDtxt.getSheetByName('Career'); //
 
   //spreadsheet Planilha de Controle Comercial
   var pCC = SpreadsheetApp.openById('13TmYShTDWlY5yQyPfge9GkqBqTYjIjlJYeNmGafOJwk').getSheets()[1];
@@ -14,7 +14,7 @@ function version01() {
   var modelo, buFolder, buEmail;
   var colLang;
 
-  //valores por default
+  //valores por padrão
   var proposalTitle = "";
   var proposalSubtitle = "";
   var flatFeeMonth = 0;
@@ -27,26 +27,26 @@ function version01() {
   var intermediateFee = 0;
   var intermediateMeeting = 0;
   var intermediateMonth = 0;
-  var completionFee = 40; //porcentaje
-  var cancellationFeePrev = 50; //porcentaje
-  var cancellationFeeAfter = 100; //porcentaje
+  var completionFee = 40; //porcentagem
+  var cancellationFeePrev = 50; //porcentagem
+  var cancellationFeeAfter = 100; //porcentagem
   var scalability1 = 7;
-  var scalabilityDiscount1 = 10; // resta un % de descuento
+  var scalabilityDiscount1 = 10; // resta uma % de desconto
   var scalability2 = 15;
-  var scalabilityDiscount2 = 15; // resta un % de descuento
+  var scalabilityDiscount2 = 15; // resta uma % de desconto
   var dueDays = 15;
   var exclusivityDays = 21;
   var meetCoaching = meetPsycho = meetCareers = meetNegotiation = meetCV = meetNetworking = meetHeadhunter = meetHR = meetLine = meetClevel = meetGTM = meetSoft = meetBusiness = meetInstit = meetTools = meetValue = 0;
-  var dbFolder = "19JlJBfL7A1BeiVXk-Xbb2hfU_HJ1CGJ-"; // en esta carpeta se almacenan las propuestas generadas
+  var dbFolder = "19JlJBfL7A1BeiVXk-Xbb2hfU_HJ1CGJ-"; //Nesta pasta que se armazena os arquivos
 
 
   Logger.log(ultFila);
   var fila = ultFila;
 
-  var ssDb = SpreadsheetApp.openById('1Zuyth2djZC2WcDljaZBL_Rms0k2GpAc9wGzgUHsV0so'); // spreadsheet BD propuestas generadas
+  var ssDb = SpreadsheetApp.openById('1Zuyth2djZC2WcDljaZBL_Rms0k2GpAc9wGzgUHsV0so'); // planilha DB de propostas criadas
   var rowBd = ssDb.getSheetByName('validation').getRange("O2").getValue();
 
-  //copio los datos cargados desde el form
+  //copio os dados carregados do formulário
 
   /* 1. Basis Data */
   var time = sRespostas.getRange(fila,1,1,1).getValue();
